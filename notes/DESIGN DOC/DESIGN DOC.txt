@@ -1,0 +1,73 @@
+GITHUB BUG GAME JAM
+
+Auto-runner, being chased by "boss" Hive Mind
+Hit action points, time slows and a mini/puzzle game pop-up bubble appears
+--> Minigame actions affect runner (jump, dodge, attack, break walls, etc.)
+--> Can also collect stat boosts (wings = higher jump, chitin = stronger defense, fangs = stronger offense, claws = stronger breaking, legs = boost speed, etc.)
+--> After you go, Hive Mind takes its turn (see MINIGAME section below)
+Goal: Get to end without dying from enemy damage or getting caught by Hive Mind
+The more stat boosts you collect, the more XP in each stat you get at the end of each level
+--> So collecting more wings gets you more XP towards permanent jump increase, etc.
+
+KEYWORDS
+
+Action Point: Opens a minigame to decide your action as well as the Hive Mind's action
+Action Trigger: Executes your currently stored action, or the Hive Mind's next queued action
+Circuit: Power-ups
+Bounce Back: Getting bounced back to just before the previous Action Point, during which time the Hive Mind closes in on you a bit
+--> Hitting a wall, or attacking an enemy but failing to kill it, causes you to Bounce Back
+--> When Hive Mind hits a wall, it just gets stuck there and waits for your next Action Point to try and get a jump in.
+Wall Breaking: Some walls are breakable, but they take time to break (depending on stats/powerups), so you'll pause in front of them while you smash them
+
+MINIGAME
+
+Top row = collectible blocks
+Bottom row = single middle ENABLED / ON source
+Middle rows = rows of ENABLED / OFF or HIDDEN nodes
+At start of level:
+  1. Bottom-up random connections to adjacent/corresponding nodes above (bottom source can potentially connect to ANY non-hidden node above it)
+	a. After forming connections from row[x] to row[x+1], evaluate ON status for each newly connected row[x+1] node
+	b. Propagation is just: `this.on = lowerConnected.some(node => node.enabled && node.on); upperConnected.forEach(propagate)`
+	c. Technically don't need recursion for first pass when upper connections don't yet exist
+  2. Top-down DISABLING of pathways
+	a. As long as  a pathway turns top row ON, trace path back through connected ON nodes (DFS/BFS), then pick a random one, DISABLE it, and propagate ON state up
+
+Action Point game:
+  1. Player chooses a DISABLED node to ENABLE, then collects the blocks/actions/etc. at the top that this ends up powering.
+	a. Timer pauses, and all time stops, after player makes a selection.
+	b. If player doesn't select in time, they simply get nothing and can do nothing this Action.
+  2. Hive Mind moves remaining blocks/actions to try and power the ones it wants
+	a. If player didn't select in time, Hive Mind will ENABLE a node to do this instead
+  3. All nodes ENABLE, then random DISABLING happens again
+  4. New blocks/actions drop in to replace the missing ones
+
+Whatever action is selected is stored, and then applied when the player hits the next Action Trigger
+--> Hive Mind's actions go into a queue and are dequeued upon hitting an Action Trigger
+
+ACTIONS
+
+Each action has an associated power-up "circuit". When collected, that circuit provides a temporary boost related to both of its XP paths, and gives XP towards you picking one of them for permanent buffs.
+
+Jump: For you = jump over things; For Hive = jump over things
+-> Powerup = wings, XP paths = jump height or low grav
+
+Dodge: For you = dodge at next Action Trigger (enemies are Action Triggers); For Hive = ?? No-op ??
+-> Powerup = legs, XP paths = speed or action time limit increase
+--> Powerup gives short-term speed boost, and next Action Point has longer time limit
+
+
+Attack: For you = trigger battle at next Action Trigger if it's an enemy, or wall smash if next trigger is a breakable wall; For Hive = shoot at you
+-> Battle means you deal damage to each other.
+--> If they die, they are removed and you continue.
+--> If you die, you die and restart the level.
+--> If neither dies, you Bounce Back (giving you a chance to try Dodging instead)
+-> Killing enemies earns you Hive XP, which can be spent on a Scramble cooldown decrease
+--> Scramble is a power-up that you only have once you unlock Level 1 with Hive XP
+--> Triggering it makes Hive's next minigame decision dumber, and then it goes on cooldown for a time dependent on the stats you have for it
+-> Powerup = fangs, XP paths = damage power or wall breaking speed
+--> Powerup gives you instant smash (or maybe 2x speed smash) on next wall break
+
+Shield: For you and Hive = defend against bomb/projectile damage at next Action Trigger
+-> Respawning mines will be on some Triggers; others will cause enemies in front of you to shoot. These don't bounce you back or slow you, but they deal damage
+-> Powerup = chitin armor, XP paths = defense or fast bounce
+--> Defense makes you take less damage from attacks; fast bounce makes you Bounce Back faster (giving Hive less time to catch up)

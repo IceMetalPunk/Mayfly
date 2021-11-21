@@ -9,6 +9,7 @@
     {"id":{"name":"SoundController","path":"objects/SoundController/SoundController.yy",},"order":2,},
     {"id":{"name":"sprActionPoint","path":"sprites/sprActionPoint/sprActionPoint.yy",},"order":3,},
     {"id":{"name":"sprHiveMind","path":"sprites/sprHiveMind/sprHiveMind.yy",},"order":2,},
+    {"id":{"name":"DESIGN DOC","path":"notes/DESIGN DOC/DESIGN DOC.yy",},"order":1,},
     {"id":{"name":"MainBGM","path":"sounds/MainBGM/MainBGM.yy",},"order":0,},
     {"id":{"name":"Player","path":"objects/Player/Player.yy",},"order":0,},
     {"id":{"name":"EffectController","path":"objects/EffectController/EffectController.yy",},"order":3,},
