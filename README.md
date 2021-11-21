@@ -25,7 +25,7 @@ While these power-ups only last for your current run, collecting them also earns
 
 **Art:**
 
-So far, all art is by me, IceMetalPunk
+So far, all art is by me, IceMetalPunk, and is 100% temporary placeholder
 
 **Music:**
 
